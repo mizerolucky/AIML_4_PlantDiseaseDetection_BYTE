@@ -31,6 +31,36 @@ from .evaluate import load_model
 from .model import FloraLensExport
 
 
+def strip_doc_strings(proto) -> int:
+    """Remove doc_string / metadata_props from an ONNX model, in place.
+
+    Returns how many fields were cleared. Purely cosmetic for inference: the
+    graph, its initializers and its node semantics are untouched, which the
+    parity check after the export confirms.
+    """
+    cleared = 0
+
+    def clear(obj) -> None:
+        nonlocal cleared
+        if getattr(obj, "doc_string", ""):
+            obj.doc_string = ""
+            cleared += 1
+
+    clear(proto)
+    del proto.metadata_props[:]
+
+    graph = proto.graph
+    clear(graph)
+    for collection in (graph.node, graph.input, graph.output, graph.initializer,
+                       graph.value_info):
+        for item in collection:
+            clear(item)
+    for node in graph.node:
+        del node.metadata_props[:]
+
+    return cleared
+
+
 def main() -> None:
     device = torch.device("cpu")
     model = load_model(device)
@@ -61,6 +91,13 @@ def main() -> None:
     import onnx
 
     model_proto = onnx.load(str(ONNX_MODEL))  # resolves external data if present
+
+    # The exporter records a Python stack trace on every node, each carrying the
+    # absolute path of the machine the export ran on. That is debug metadata: it
+    # bloats the file and publishes the exporting machine's directory layout to
+    # anyone who runs `strings` on a deployed model. Strip it.
+    strip_doc_strings(model_proto)
+
     onnx.save_model(model_proto, str(ONNX_MODEL), save_as_external_data=False)
 
     for sidecar in ONNX_MODEL.parent.glob(f"{ONNX_MODEL.name}.data*"):
