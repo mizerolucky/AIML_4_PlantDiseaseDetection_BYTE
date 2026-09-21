@@ -1,0 +1,26 @@
+{
+  "total_images": 2152,
+  "unique_md5": 2152,
+  "exact_duplicate_groups": 0,
+  "exact_duplicates_crossing_splits": 0,
+  "near_duplicate_threshold_bits": 4,
+  "near_duplicate_pairs_crossing_splits": 0,
+  "near_duplicate_examples": [],
+  "split_counts": {
+    "train": {
+      "Early Blight": 700,
+      "Healthy": 106,
+      "Late Blight": 700
+    },
+    "val": {
+      "Early Blight": 150,
+      "Healthy": 23,
+      "Late Blight": 150
+    },
+    "test": {
+      "Early Blight": 150,
+      "Healthy": 23,
+      "Late Blight": 150
+    }
+  }
+}

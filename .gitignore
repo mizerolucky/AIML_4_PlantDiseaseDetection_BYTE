@@ -1,0 +1,31 @@
+# Dataset images are not committed. See README for how to fetch them.
+data/raw/
+data/splits/
+
+# Third-party ImageNet backbone weights: fetched by scripts/fetch_backbone.py,
+# not our artifact to redistribute. The fine-tuned model IS committed.
+models/mobilenetv3_small_imagenet.pth
+
+# CLI output
+predictions/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Training scratch
+runs/
+*.log
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Node / Vercel
+node_modules/
+.vercel/
