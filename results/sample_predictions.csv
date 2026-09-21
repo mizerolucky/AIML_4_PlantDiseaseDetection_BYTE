@@ -1,0 +1,20 @@
+figure,source_image,actual,predicted,confidence,correct,p_Early_Blight,p_Healthy,p_Late_Blight
+sample_01_err_Healthy.png,7050bb1d-af0d-47c4-8f35-23b9561b8024___RS_LB 3313.JPG,Late Blight,Healthy,0.8228,False,0.0018,0.8228,0.1754
+sample_02_err_Healthy.png,b9474ec5-5a67-4207-98ec-5671c19f8f59___RS_LB 2545.JPG,Late Blight,Healthy,0.6457,False,0.0019,0.6457,0.3524
+sample_03_err_Healthy.png,d4486c3c-6d93-4d08-a3f5-7f4ae1f7ef3b___RS_LB 2829.JPG,Late Blight,Healthy,0.5566,False,0.0112,0.5566,0.4322
+sample_04_err_Healthy.png,6d31cafb-4cf9-455b-ac89-487444b650f7___RS_LB 4236.JPG,Late Blight,Healthy,0.4936,False,0.0539,0.4936,0.4524
+sample_05_ok_EarlyBlight.png,d4f3066f-adb8-401b-a27f-19a12c336ebe___RS_Early.B 8626.JPG,Early Blight,Early Blight,0.8945,True,0.8945,0.0757,0.0298
+sample_06_ok_EarlyBlight.png,357b61ef-a56b-4207-aa26-161b0ef3e635___RS_Early.B 8492.JPG,Early Blight,Early Blight,0.9606,True,0.9606,0.0003,0.0391
+sample_07_ok_EarlyBlight.png,2b3e46d9-09dd-4966-99c6-fe44c741b94c___RS_Early.B 8290.JPG,Early Blight,Early Blight,0.9621,True,0.9621,0.0045,0.0335
+sample_08_ok_EarlyBlight.png,7ba072ea-9bb3-4b5e-8fff-82758ff3f722___RS_Early.B 8262.JPG,Early Blight,Early Blight,0.9750,True,0.9750,0.0027,0.0222
+sample_09_ok_Healthy.png,77c75478-e1f0-4aaa-9cbc-af1fed928a74___RS_HL 1748.JPG,Healthy,Healthy,0.9783,True,0.0056,0.9783,0.0161
+sample_10_ok_Healthy.png,52dd2fdd-6966-450c-a42b-ee14428d4271___RS_HL 1955.JPG,Healthy,Healthy,0.9964,True,0.0003,0.9964,0.0033
+sample_11_ok_Healthy.png,c07db642-c675-4066-99b6-56bc8207fb37___RS_HL 4164.JPG,Healthy,Healthy,0.9979,True,0.0008,0.9979,0.0013
+sample_12_ok_Healthy.png,3f369e63-81eb-4194-a145-df9ed91abc5d___RS_HL 1745.JPG,Healthy,Healthy,0.9979,True,0.0010,0.9979,0.0011
+sample_13_ok_LateBlight.png,d385010f-53c1-4e7d-9fd3-50f0c98dc245___RS_LB 3865.JPG,Late Blight,Late Blight,0.5383,True,0.0091,0.4527,0.5383
+sample_14_ok_LateBlight.png,a9c8a264-33be-48f1-bd1d-2cc6c9c8e247___RS_LB 4888.JPG,Late Blight,Late Blight,0.7055,True,0.1838,0.1107,0.7055
+sample_15_ok_LateBlight.png,5a2996c9-ed8f-4c8d-bab3-b68a833b7811___RS_LB 4786.JPG,Late Blight,Late Blight,0.8717,True,0.1239,0.0043,0.8717
+sample_16_ok_LateBlight.png,5759c134-1965-4dd2-b71a-4eef4048f962___RS_LB 3975.JPG,Late Blight,Late Blight,0.8812,True,0.0029,0.1159,0.8812
+sample_17_ok_EarlyBlight.png,acb59a95-cbe4-4602-9b8a-9adbf12899af___RS_Early.B 6754.JPG,Early Blight,Early Blight,1.0000,True,1.0000,0.0000,0.0000
+sample_18_ok_Healthy.png,ef7005dc-1d44-412e-b858-145a2d7a6fa9___RS_HL 1951.JPG,Healthy,Healthy,1.0000,True,0.0000,1.0000,0.0000
+sample_19_ok_LateBlight.png,6522615a-cbe1-4770-a137-25a2c081e1d9___RS_LB 2917.JPG,Late Blight,Late Blight,1.0000,True,0.0000,0.0000,1.0000

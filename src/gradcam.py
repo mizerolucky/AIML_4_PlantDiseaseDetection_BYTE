@@ -49,7 +49,7 @@ def gradcam_autograd(
         out.retain_grad()
         feats_store["value"] = out
 
-    handle = model.features.register_forward_hook(hook)
+    handle = model.backbone.register_forward_hook(hook)
     try:
         logits, _ = model.forward_with_features(x)
         probs = F.softmax(logits, dim=1)

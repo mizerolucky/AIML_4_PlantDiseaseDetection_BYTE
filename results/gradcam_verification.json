@@ -1,0 +1,15 @@
+{
+  "n_images": 60,
+  "autograd_vs_closed_form": {
+    "max_abs_cam_difference": 2.980232238769531e-07,
+    "mean_abs_cam_difference": 1.4801820119222006e-07,
+    "max_abs_probability_difference": 0.0,
+    "predicted_class_mismatches": 0
+  },
+  "onnx_vs_pytorch": {
+    "max_abs_logit_difference": 3.814697265625e-06,
+    "max_abs_cam_difference": 1.9073486328125e-06
+  },
+  "tolerance": 0.0001,
+  "passed": true
+}

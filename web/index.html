@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FloraLens</title>
+<meta name="description" content="Potato leaf disease classification with Grad-CAM explanations, running entirely in the browser.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍃</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand">
+      <span class="leaf" aria-hidden="true">🍃</span>
+      <div>
+        <h1>FloraLens</h1>
+        <p class="tagline">Potato leaf disease detection, with the model showing its working</p>
+      </div>
+    </div>
+    <div class="status" id="status" role="status" aria-live="polite">
+      <span class="dot" id="statusDot"></span><span id="statusText">Loading model…</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="panel scope-note">
+    <strong>Scope:</strong> this model was trained on potato leaves only, and knows exactly three
+    categories: early blight, late blight, and healthy. Give it a tomato leaf, a hand, or a
+    photograph of a wall and it will still return one of those three labels with a confidence
+    attached, because a softmax over three classes has nowhere else to go. Read the confidence as
+    "how strongly this resembles one of the three classes I know", not as a diagnosis.
+  </section>
+
+  <section class="panel uploader" id="drop">
+    <input type="file" id="fileInput" accept="image/*" hidden>
+    <div class="uploader-inner">
+      <p class="uploader-title">Drop a leaf photo here</p>
+      <p class="uploader-sub">or</p>
+      <button class="btn" id="browseBtn" type="button">Choose an image</button>
+      <p class="uploader-hint">Nothing is uploaded anywhere. The model runs in this tab.</p>
+    </div>
+  </section>
+
+  <section class="samples">
+    <p class="samples-label">No leaf handy? Try one from the held-out test set:</p>
+    <div class="sample-strip" id="sampleStrip"></div>
+  </section>
+
+  <section class="results" id="results" hidden>
+    <div class="verdict panel" id="verdict"></div>
+
+    <div class="image-pair">
+      <figure class="panel">
+        <figcaption>Input</figcaption>
+        <canvas id="inputCanvas" width="224" height="224"></canvas>
+      </figure>
+      <figure class="panel">
+        <figcaption>
+          Grad-CAM
+          <span class="legend" aria-hidden="true">
+            <span class="legend-bar"></span>
+            <span class="legend-ends"><span>low</span><span>high</span></span>
+          </span>
+        </figcaption>
+        <canvas id="camCanvas" width="224" height="224"></canvas>
+      </figure>
+    </div>
+
+    <div class="panel scores">
+      <h2>All class scores</h2>
+      <div id="scoreList"></div>
+    </div>
+
+    <div class="panel reading">
+      <h2>How to read the heatmap</h2>
+      <p>
+        Red marks the regions that pushed the score for the predicted class up the most; blue marks
+        regions that did not contribute. It answers "what was the model looking at", which is not the
+        same question as "where is the diseased tissue". The map is computed at 7×7 and stretched over
+        the image, so it shows roughly which part of the leaf mattered, not a lesion outline.
+      </p>
+      <p>
+        A heatmap sitting on the background rather than the leaf is worth noticing: it usually means
+        the prediction leaned on something other than the plant.
+      </p>
+    </div>
+
+    <div class="actions">
+      <button class="btn ghost" id="downloadBtn" type="button">Download this result</button>
+      <button class="btn ghost" id="resetBtn" type="button">Try another image</button>
+    </div>
+  </section>
+
+  <section class="panel about">
+    <h2>What this is</h2>
+    <p>
+      A MobileNetV3-Small backbone, pretrained on ImageNet and fine-tuned on the potato subset of
+      the PlantVillage dataset. The classification head is a single linear layer on top of global
+      average pooling, which is what lets this page reproduce Grad-CAM exactly without running a
+      backward pass: the channel weights Grad-CAM would derive from gradients are, for this
+      architecture, the classifier weights themselves.
+    </p>
+    <p>
+      That equivalence is verified numerically in the repository rather than asserted &mdash; the
+      browser's heatmap is compared against a reference autograd implementation over test images,
+      and the exported ONNX model is compared against PyTorch.
+    </p>
+    <p class="repo-line">
+      <a id="repoLink" href="https://github.com/mizerolucky/AIML_4_PlantDiseaseDetection_BYTE">Source, metrics and training code on GitHub</a>
+    </p>
+  </section>
+
+</main>
+
+<footer class="wrap site-footer">
+  <p>
+    Built for the B.Y.T.E. / Arithmatrix AVIP 2026 AI/ML track, Task 4.
+    Dataset: <a href="https://github.com/spMohanty/PlantVillage-Dataset">PlantVillage</a>.
+    Not a substitute for agronomic advice.
+  </p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.19.2/dist/ort.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

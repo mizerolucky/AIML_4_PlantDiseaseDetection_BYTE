@@ -53,8 +53,24 @@ def main() -> None:
         opset_version=17,
         do_constant_folding=True,
     )
+    # torch.onnx.export writes tensors to a sidecar `.onnx.data` file once the
+    # model passes a size threshold. That is fine locally, where the two files
+    # sit together, and broken on the web, where only the graph tends to get
+    # deployed and the model then loads with no weights at all. Consolidate
+    # into one self-contained file and make sure no sidecar survives.
+    import onnx
+
+    model_proto = onnx.load(str(ONNX_MODEL))  # resolves external data if present
+    onnx.save_model(model_proto, str(ONNX_MODEL), save_as_external_data=False)
+
+    for sidecar in ONNX_MODEL.parent.glob(f"{ONNX_MODEL.name}.data*"):
+        sidecar.unlink()
+    leftovers = list(ONNX_MODEL.parent.glob(f"{ONNX_MODEL.name}.data*"))
+    if leftovers:
+        raise SystemExit(f"External data still present: {leftovers}")
+
     size_mb = ONNX_MODEL.stat().st_size / 1e6
-    print(f"Exported {ONNX_MODEL} ({size_mb:.2f} MB)")
+    print(f"Exported {ONNX_MODEL} ({size_mb:.2f} MB, single file)")
 
     # Parity check against PyTorch on random inputs. An export that silently
     # changes behaviour is the sort of thing you only notice in the demo.
@@ -90,10 +106,23 @@ def main() -> None:
 
     WEB_MODEL_DIR.mkdir(parents=True, exist_ok=True)
     (WEB_MODEL_DIR / "meta.json").write_text(json.dumps(meta))
-    shutil.copy(ONNX_MODEL, WEB_MODEL_DIR / "floralens.onnx")
+    web_model = WEB_MODEL_DIR / "floralens.onnx"
+    shutil.copy(ONNX_MODEL, web_model)
     LABELS_JSON.write_text(json.dumps({"classes": CLASSES}, indent=2))
 
+    # Load the deployed copy on its own, from a directory holding nothing else,
+    # to confirm it really is self-contained before it reaches the browser.
+    web_sess = ort.InferenceSession(str(web_model), providers=["CPUExecutionProvider"])
+    probe = torch.randn(1, 3, IMAGE_SIZE, IMAGE_SIZE)
+    web_logits, _ = web_sess.run(None, {web_sess.get_inputs()[0].name: probe.numpy()})
+    with torch.no_grad():
+        ref_logits, _ = model.forward_with_features(probe)
+    web_diff = float(np.abs(web_logits - ref_logits.numpy()).max())
+    if web_diff > 1e-4:
+        raise SystemExit(f"Deployed copy disagrees with PyTorch (diff {web_diff:.3e})")
+
     print(f"Copied model and meta.json into {WEB_MODEL_DIR}")
+    print(f"Deployed copy verified self-contained (max |logit diff| {web_diff:.3e})")
 
 
 if __name__ == "__main__":

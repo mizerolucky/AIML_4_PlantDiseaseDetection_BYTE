@@ -1,0 +1,55 @@
+{
+  "test_accuracy": 0.9876160990712074,
+  "macro_f1": 0.9688288288288288,
+  "weighted_f1": 0.9880277801020836,
+  "per_class": {
+    "Early Blight": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 150
+    },
+    "Healthy": {
+      "precision": 0.8518518518518519,
+      "recall": 1.0,
+      "f1": 0.92,
+      "support": 23
+    },
+    "Late Blight": {
+      "precision": 1.0,
+      "recall": 0.9733333333333334,
+      "f1": 0.9864864864864865,
+      "support": 150
+    }
+  },
+  "confusion_matrix": {
+    "labels": [
+      "Early Blight",
+      "Healthy",
+      "Late Blight"
+    ],
+    "rows_are_actual": [
+      [
+        150,
+        0,
+        0
+      ],
+      [
+        0,
+        23,
+        0
+      ],
+      [
+        0,
+        4,
+        146
+      ]
+    ]
+  },
+  "confidence": {
+    "mean_when_correct": 0.9921200940601504,
+    "mean_when_wrong": 0.6296904906630516,
+    "n_wrong": 4
+  },
+  "n_test_images": 323
+}

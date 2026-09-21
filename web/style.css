@@ -1,0 +1,209 @@
+:root {
+  --bg: #f6f7f4;
+  --panel: #ffffff;
+  --ink: #1b2118;
+  --ink-soft: #55604f;
+  --line: #e0e4dc;
+  --accent: #2f6d3f;
+  --accent-soft: #eaf3ec;
+  --warn: #b4442c;
+  --radius: 14px;
+  --shadow: 0 1px 2px rgba(27, 33, 24, .05), 0 6px 18px rgba(27, 33, 24, .06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12140f;
+    --panel: #1a1d17;
+    --ink: #e8ece4;
+    --ink-soft: #9aa593;
+    --line: #2b302a;
+    --accent: #7fc48d;
+    --accent-soft: #1f2a20;
+    --warn: #e8896f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 18px rgba(0, 0, 0, .35);
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { width: min(1040px, 100% - 32px); margin-inline: auto; }
+
+/* ---------- header ---------- */
+
+.site-header {
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+  padding: 18px 0;
+  margin-bottom: 28px;
+}
+
+.site-header .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand { display: flex; align-items: center; gap: 13px; }
+.leaf { font-size: 30px; line-height: 1; }
+
+h1 { font-size: 22px; margin: 0; letter-spacing: -.01em; }
+.tagline { margin: 2px 0 0; color: var(--ink-soft); font-size: 14px; }
+
+.status {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--ink-soft);
+  background: var(--accent-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 13px;
+}
+
+.dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #d8a13a; flex: none;
+}
+.status.ready .dot { background: var(--accent); }
+.status.error .dot { background: var(--warn); }
+
+/* ---------- panels ---------- */
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  box-shadow: var(--shadow);
+}
+
+main > section { margin-bottom: 22px; }
+
+h2 { font-size: 15px; margin: 0 0 10px; letter-spacing: .01em; }
+
+.scope-note { font-size: 14.5px; color: var(--ink-soft); border-left: 3px solid var(--accent); }
+.scope-note strong { color: var(--ink); }
+
+/* ---------- uploader ---------- */
+
+.uploader {
+  border: 2px dashed var(--line);
+  background: var(--panel);
+  text-align: center;
+  padding: 40px 22px;
+  transition: border-color .15s, background .15s;
+  cursor: pointer;
+}
+.uploader.hover { border-color: var(--accent); background: var(--accent-soft); }
+
+.uploader-title { margin: 0 0 4px; font-size: 17px; font-weight: 600; }
+.uploader-sub { margin: 0 0 12px; color: var(--ink-soft); font-size: 13px; }
+.uploader-hint { margin: 14px 0 0; color: var(--ink-soft); font-size: 12.5px; }
+
+.btn {
+  font: inherit; font-size: 14px; font-weight: 550;
+  padding: 9px 18px; border-radius: 9px;
+  border: 1px solid transparent;
+  background: var(--accent); color: #fff;
+  cursor: pointer;
+}
+.btn:hover { filter: brightness(1.06); }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.btn.ghost {
+  background: transparent; color: var(--ink);
+  border-color: var(--line);
+}
+.btn.ghost:hover { background: var(--accent-soft); }
+
+/* ---------- samples ---------- */
+
+.samples-label { font-size: 13.5px; color: var(--ink-soft); margin: 0 0 10px; }
+.sample-strip { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.sample-strip button {
+  padding: 0; border: 2px solid var(--line); background: none;
+  border-radius: 10px; overflow: hidden; cursor: pointer; line-height: 0;
+}
+.sample-strip button:hover { border-color: var(--accent); }
+.sample-strip img { width: 74px; height: 74px; object-fit: cover; display: block; }
+
+/* ---------- results ---------- */
+
+.verdict { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.verdict .label { font-size: 23px; font-weight: 650; letter-spacing: -.01em; }
+.verdict .conf { font-size: 15px; color: var(--ink-soft); }
+.verdict .flag {
+  font-size: 12.5px; color: var(--warn);
+  border: 1px solid currentColor; border-radius: 999px; padding: 2px 10px;
+}
+
+.image-pair {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.image-pair figure { margin: 0; text-align: center; }
+.image-pair figcaption {
+  font-size: 13px; color: var(--ink-soft); margin-bottom: 10px;
+  display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+}
+.image-pair canvas {
+  width: 100%; max-width: 320px; height: auto;
+  border-radius: 10px; image-rendering: auto;
+  border: 1px solid var(--line);
+}
+
+.legend { display: inline-flex; flex-direction: column; gap: 2px; }
+.legend-bar {
+  width: 78px; height: 7px; border-radius: 4px;
+  background: linear-gradient(90deg, #0080ff, #00d46a, #ffd400, #ff2d00);
+}
+.legend-ends { display: flex; justify-content: space-between; font-size: 10px; }
+
+/* ---------- scores ---------- */
+
+.score-row { margin-bottom: 12px; }
+.score-row:last-child { margin-bottom: 0; }
+
+.score-head {
+  display: flex; justify-content: space-between;
+  font-size: 13.5px; margin-bottom: 5px;
+}
+.score-head .name { font-weight: 550; }
+.score-head .val { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+
+.score-track { height: 9px; background: var(--accent-soft); border-radius: 999px; overflow: hidden; }
+.score-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width .35s ease; }
+.score-row.dim .score-fill { background: var(--ink-soft); opacity: .45; }
+
+.reading p { font-size: 14px; color: var(--ink-soft); margin: 0 0 10px; }
+.reading p:last-child { margin-bottom: 0; }
+
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.about p { font-size: 14px; color: var(--ink-soft); margin: 0 0 10px; }
+.repo-line { margin-top: 14px !important; }
+
+a { color: var(--accent); }
+
+.site-footer {
+  margin: 34px auto;
+  font-size: 12.5px; color: var(--ink-soft);
+  border-top: 1px solid var(--line); padding-top: 16px;
+}
+.site-footer p { margin: 0; }
+
+@media (max-width: 560px) {
+  .site-header .wrap { justify-content: flex-start; }
+  .verdict .label { font-size: 20px; }
+}
