@@ -4,7 +4,7 @@ Potato leaf disease classification that shows which part of the leaf it based th
 answer on. Built for the B.Y.T.E. / Arithmatrix **AVIP 2026** AI/ML track, Task 4
 ("The X-Ray Vision").
 
-**Live demo:** _(added below once deployed)_
+**Live demo:** https://floralens-seven.vercel.app/
 
 | | |
 |---|---|
