@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) Microsoft Corporation
+Copyright (c) 2026 Mizero Lucky Gall
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,5 +20,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Bundled files in this directory come from onnxruntime-web 1.19.2
-(https://github.com/microsoft/onnxruntime), redistributed under the terms above.
+---
+
+This licence covers the code in this repository. Third-party components keep
+their own licences:
+
+- src/mobilenetv3.py and the ImageNet weights it loads: MIT, (c) 2019 Duo Li.
+  Full text in THIRD_PARTY_LICENSES.txt.
+- web/vendor/ (onnxruntime-web): MIT, (c) Microsoft Corporation.
+  Full text in web/vendor/ONNXRUNTIME-LICENSE.txt.
+- The PlantVillage dataset is not redistributed here; see the README for how
+  to obtain it and for its own terms.

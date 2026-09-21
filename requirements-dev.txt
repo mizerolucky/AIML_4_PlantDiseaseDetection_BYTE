@@ -1,0 +1,3 @@
+# Development / verification extras, not needed to run the model.
+-r requirements.txt
+playwright>=1.40

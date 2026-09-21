@@ -9,8 +9,10 @@ straight out of the classifier layer. This is valid only because the head is
 global average pooling into a single linear layer (see src/model.py), and it is
 what the JavaScript in web/app.js reproduces.
 
-Keeping both lets src/verify_gradcam.py prove that the map shown in the browser
-is the same map the reference implementation produces, rather than a lookalike.
+Keeping both lets src/verify_gradcam.py check the closed form against the
+reference numerically. That covers the Python side only; the JavaScript in
+web/app.js is a separate implementation, and scripts/verify_browser_gradcam.py
+exercises that one in a real browser.
 """
 
 from __future__ import annotations

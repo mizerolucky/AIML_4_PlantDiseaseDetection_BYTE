@@ -29,26 +29,27 @@ decision. It reaches 98.76% accuracy and 0.9688 macro F1 on 323 held-out images.
 The interesting part is not the accuracy — PlantVillage is a clean, uniformly
 photographed dataset and high numbers are expected on it — but what the heatmaps
 show. Every one of the four test errors runs the same direction: a late blight
-leaf called healthy. Looking at their Grad-CAM maps, the model concentrated on
-clean tissue in the middle of the leaf while the lesions sat near the margins. It
-did not fail randomly; it looked at a genuinely healthy part of a diseased leaf.
-That is a diagnosis a bare confusion matrix cannot give you, and it points at a
-concrete fix: those leaves are photographed with lesions at the edge, and the
-current 224×224 centre-weighted view under-samples exactly that region.
+leaf called healthy, and in each case the Grad-CAM map concentrates on clean
+tissue toward the middle of the leaf while the visible lesions sit nearer the
+margins. The model did not fail randomly; it answered about the part of the leaf
+it was looking at, and that part really was healthy. A confusion matrix records
+that four images were wrong; the heatmaps show what the model was attending to
+when it got them wrong.
 
 The architecture was chosen to make the explanation trustworthy rather than
 decorative. The network ends in global average pooling feeding a single linear
 layer, which makes Grad-CAM reduce to a weighted sum of the final feature maps
 using the classifier weights. That means the browser can compute a true Grad-CAM
-with no backward pass, and — more importantly — the claim is checkable. The
-repository verifies the browser's heatmap against a reference autograd
-implementation over 60 test images; they agree to 3.0 × 10⁻⁷.
+with no backward pass, and — more importantly — the claim is checkable. It is
+checked twice: the closed form against a reference autograd implementation in
+Python, and the demo's actual JavaScript, executed in a headless browser, against
+PyTorch. Both agree to within 10⁻⁶ on the same feature map.
 
 Class imbalance was handled with inverse-frequency loss weighting, since healthy
 leaves are only 152 of 2,152 images, and checkpoints were selected on validation
 macro F1 rather than accuracy so the rare class could not be quietly sacrificed.
 
-_(293 words)_
+_(291 words)_
 
 ---
 
@@ -80,6 +81,18 @@ visible as low-confidence cases rather than confident wrong answers. Healthy
 recall is a perfect 1.000 but its precision is 0.852, and both facts are the same
 four images: nothing healthy was flagged as diseased, but four diseased leaves
 slipped into the healthy bucket.
+
+**What is not established.** The heatmaps on those four sit on central tissue
+while the lesions sit nearer the leaf margin. That is an observation, not an
+explanation, and it is worth being clear about what it does *not* imply. It is
+not a cropping artefact: `src/data.py` resizes the whole image to 224×224
+without cropping, so the margins are fully present in the model's input. Several
+hypotheses remain open — the 7×7 feature grid may be too coarse to isolate small
+marginal lesions, or these four leaves may simply have faint lesions, which their
+low confidences (0.49–0.82, against 0.99 when correct) would be consistent with.
+Telling those apart needs an experiment, not a closer look at four pictures.
+Higher input resolution and lesion-area annotations would be the way in. With
+four images and no lesion labels, the current evidence does not settle it.
 
 All four are included in `results/samples/` (`sample_01`–`sample_04`) rather than
 left out of the gallery.
@@ -116,17 +129,41 @@ The `1/HW` is a positive constant and disappears when the map is normalised to
 [0,1]. So the browser reproduces a genuine Grad-CAM from the classifier weights
 and the feature map alone — no autograd, no backward pass.
 
-Algebra is easy to get subtly wrong, so this is verified numerically rather than
-asserted. `src/verify_gradcam.py` runs both implementations over 60 test images
-and also compares the exported ONNX model against PyTorch:
+Algebra is easy to get subtly wrong, and so is transcribing it into another
+language, so both are checked numerically rather than asserted.
+
+`src/verify_gradcam.py` covers the Python side over 60 test images, and also
+compares the exported ONNX graph against PyTorch:
 
 | Comparison | Max absolute difference |
 |---|---|
 | Autograd Grad-CAM vs closed form | 3.0 × 10⁻⁷ |
-| ONNX (what the browser runs) vs PyTorch | 1.9 × 10⁻⁶ |
+| ONNX graph vs PyTorch | 1.9 × 10⁻⁶ |
 | Predicted-class mismatches | 0 / 60 |
 
-Results are written to `results/gradcam_verification.json`.
+Those are all Python, so on their own they say nothing about `web/app.js`: a
+transcription error in the JavaScript would pass every one of them.
+`scripts/verify_browser_gradcam.py` closes that gap by serving the site, driving
+headless Chromium, and calling the **page's own** `computeCam()` with a feature
+map from PyTorch:
+
+| Comparison (real browser) | Max absolute difference |
+|---|---|
+| `web/app.js` `computeCam()` vs PyTorch autograd Grad-CAM | 6.0 × 10⁻⁷ |
+| `web/app.js` `softmax()` vs PyTorch | 1.1 × 10⁻⁷ |
+| Console errors | 0 |
+
+**Scope, stated precisely.** These compare the CAM computation *given an
+identical feature map*. They do not claim the picture on screen is bit-identical
+to the CLI's for the same uploaded file, and it will not be: PIL and the browser
+canvas resize images differently, so the two pipelines see slightly different
+pixels before the model ever runs, and the 7×7 map is upscaled for display by the
+browser's own interpolation. What is verified is that the browser computes the
+same Grad-CAM from the same features — not that two different preprocessing paths
+produce the same image.
+
+Results are written to `results/gradcam_verification.json` and
+`results/browser_gradcam_verification.json`.
 
 ---
 
@@ -240,7 +277,15 @@ python -m src.train              # ~7 min on 2 CPU cores
 python -m src.evaluate           # test metrics + plots
 python -m src.sample_predictions # the Grad-CAM gallery
 python -m src.export_onnx        # ONNX for the browser demo
-python -m src.verify_gradcam     # the verification table above
+python -m src.verify_gradcam     # the Python verification table above
+```
+
+The browser check needs Playwright, which is a development-only dependency:
+
+```bash
+pip install -r requirements-dev.txt
+playwright install chromium
+python scripts/verify_browser_gradcam.py   # the real-browser table above
 ```
 
 `notebooks/train.ipynb` walks through the same pipeline with commentary.
@@ -288,13 +333,16 @@ src/
   train.py             training loop, checkpoint selection on val macro F1
   evaluate.py          test metrics, confusion matrix, curves
   gradcam.py           both Grad-CAM implementations + overlay rendering
-  verify_gradcam.py    numerical proof the two agree, and that ONNX matches
+  verify_gradcam.py    numerical check of the closed form, and of ONNX
   sample_predictions.py  the inference gallery
   export_onnx.py       ONNX export + parity checks
 scripts/
   fetch_backbone.py    download + MD5-verify the ImageNet weights
   check_backbone.py    re-run the backbone provenance checks
+  verify_browser_gradcam.py  run web/app.js in a real browser, compare to PyTorch
 predict.py             command-line inference
+LICENSE                MIT, for the code here
+requirements-dev.txt   extras for the browser verification only
 models/                trained checkpoint (.pth), ONNX model, labels
 results/               metrics, plots, sample predictions, verification
 data/manifest.csv      the authoritative split
@@ -396,5 +444,6 @@ Hughes & Salathé, 2015.
 
 ## Licence
 
-MIT, for the code in this repository. Third-party components keep their own
-licences as noted above.
+MIT — see `LICENSE`. Third-party components keep their own licences, with full
+text included rather than linked: `THIRD_PARTY_LICENSES.txt` for the vendored
+backbone, `web/vendor/ONNXRUNTIME-LICENSE.txt` for ONNX Runtime Web.

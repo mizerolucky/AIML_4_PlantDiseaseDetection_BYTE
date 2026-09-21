@@ -105,9 +105,10 @@
       architecture, the classifier weights themselves.
     </p>
     <p>
-      That equivalence is verified numerically in the repository rather than asserted &mdash; the
-      browser's heatmap is compared against a reference autograd implementation over test images,
-      and the exported ONNX model is compared against PyTorch.
+      That equivalence is verified numerically in the repository rather than asserted. The
+      exported model is compared against PyTorch, and this page's own Grad-CAM code is run in a
+      headless browser and compared against a reference autograd implementation, agreeing to about
+      6&times;10<sup>-7</sup> on the same feature map.
     </p>
     <p class="repo-line">
       <a id="repoLink" href="https://github.com/mizerolucky/AIML_4_PlantDiseaseDetection_BYTE">Source, metrics and training code on GitHub</a>

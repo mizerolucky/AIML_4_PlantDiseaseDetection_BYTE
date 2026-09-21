@@ -355,4 +355,15 @@ el("downloadBtn").addEventListener("click", () => {
   a.click();
 });
 
+/*
+ * Test hook. scripts/verify_browser_gradcam.py drives a real browser, feeds a
+ * known feature map into computeCam below, and compares the result against the
+ * PyTorch autograd Grad-CAM for the same tensor.
+ *
+ * Exposing the functions is what makes that check meaningful: the script calls
+ * this file's implementation rather than a Python transcription of it, so a
+ * divergence between the two languages cannot slip through unnoticed.
+ */
+window.__floralens = { computeCam, softmax, ramp, get meta() { return meta; } };
+
 init();

@@ -1,0 +1,11 @@
+{
+  "what_this_checks": "web/app.js computeCam() and softmax(), executed in Chromium, against PyTorch autograd Grad-CAM on the same feature tensor",
+  "not_checked": "end-to-end output for an uploaded file: PIL and the browser canvas resize images differently, and the 7x7 map is upscaled for display by the browser, so displayed pixels are not expected to match bit for bit",
+  "n_images": 12,
+  "max_abs_cam_difference": 5.960464477539062e-07,
+  "mean_abs_cam_difference": 4.1226545969645184e-07,
+  "max_abs_softmax_difference": 1.0967800956329654e-07,
+  "console_errors": [],
+  "tolerance": 0.0001,
+  "passed": true
+}

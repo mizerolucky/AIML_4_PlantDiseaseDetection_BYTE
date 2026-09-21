@@ -11,10 +11,15 @@ With a GAP -> Linear head, Grad-CAM has a closed form. For class c:
     cam           = relu(sum_k alpha_k * A_k) = relu(sum_k w_ck * A_k) / HW
 
 The 1/HW is a positive constant, so once the map is normalised to [0, 1] it
-drops out. The browser can therefore produce a pixel-identical Grad-CAM from
-the classifier weights and the feature map alone, with no autograd and no
-backward pass. src/verify_gradcam.py checks that equality numerically against
-a real autograd Grad-CAM instead of asking the reader to trust the algebra.
+drops out. The browser can therefore compute Grad-CAM from the classifier
+weights and the feature map alone, with no autograd and no backward pass.
+
+Two scripts check that numerically rather than asking the reader to trust the
+algebra: src/verify_gradcam.py compares the two Python implementations and the
+ONNX graph, and scripts/verify_browser_gradcam.py drives a real browser and
+compares web/app.js's own computeCam() against PyTorch. Both compare the CAM
+given the same feature map; neither claims two different image-resizing paths
+produce identical pixels.
 
 The stock MobileNetV3 head (Linear -> Hardswish -> Dropout -> Linear) would
 break the equivalence, which is why it is replaced rather than reused.

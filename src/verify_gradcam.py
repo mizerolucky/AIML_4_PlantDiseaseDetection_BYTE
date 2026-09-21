@@ -1,4 +1,4 @@
-"""Prove the browser's Grad-CAM equals the reference Grad-CAM.
+"""Check the closed-form Grad-CAM against the reference implementation.
 
     python -m src.verify_gradcam
 
@@ -9,7 +9,12 @@ asserting it, by running both implementations over real test images and
 comparing the resulting maps pixel by pixel.
 
 It also compares the PyTorch model against the exported ONNX model, so the
-thing shipped to the browser is covered too, not just the Python code.
+weights shipped to the browser are covered too.
+
+What this script does NOT cover: web/app.js. Everything here is Python, so a
+transcription error in the JavaScript would pass every check below. That is
+what scripts/verify_browser_gradcam.py is for -- it runs the page's own code in
+a real browser.
 
 Writes results/gradcam_verification.json.
 """
@@ -62,7 +67,7 @@ def main() -> None:
         },
     }
 
-    print("Autograd Grad-CAM vs closed-form Grad-CAM (the browser's method):")
+    print("Autograd Grad-CAM vs closed-form Grad-CAM (the method app.js uses):")
     print(f"  max  |difference| over all pixels : {max(cam_diffs):.3e}")
     print(f"  mean |difference| over all pixels : {np.mean(cam_diffs):.3e}")
     print(f"  predicted-class mismatches        : {class_mismatches} / {n}")
@@ -87,7 +92,9 @@ def main() -> None:
                 logits_t, feats_t = model.forward_with_features(xb)
             onnx_logit_diffs.append(float(np.abs(logits_onnx - logits_t.numpy()).max()))
 
-            # Reproduce exactly what web/app.js does with these two outputs.
+            # The same arithmetic web/app.js performs, written in Python. This
+            # is a transcription of it, not the file itself; the browser script
+            # is what actually exercises app.js.
             cls = int(np.argmax(logits_onnx[0]))
             cam_js = np.maximum((w[cls][:, None, None] * feats_onnx[0]).sum(axis=0), 0)
             cam_js = normalise(cam_js)
@@ -99,7 +106,7 @@ def main() -> None:
             "max_abs_logit_difference": max(onnx_logit_diffs),
             "max_abs_cam_difference": max(onnx_cam_diffs),
         }
-        print("\nONNX (what the browser runs) vs PyTorch autograd Grad-CAM:")
+        print("\nONNX graph vs PyTorch autograd Grad-CAM:")
         print(f"  max |logit difference| : {max(onnx_logit_diffs):.3e}")
         print(f"  max |CAM difference|   : {max(onnx_cam_diffs):.3e}")
     else:
