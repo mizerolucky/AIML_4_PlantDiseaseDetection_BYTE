@@ -124,7 +124,12 @@
   </p>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.19.2/dist/ort.min.js"></script>
+<!--
+  ONNX Runtime Web is served from this site rather than a CDN, so the demo has
+  no third-party runtime dependency and keeps working if a CDN is unreachable.
+  onnxruntime-web 1.19.2, MIT licensed (see vendor/ONNXRUNTIME-LICENSE.txt).
+-->
+<script src="vendor/ort.wasm.min.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

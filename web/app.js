@@ -52,7 +52,13 @@ async function init() {
     if (!metaResponse.ok) throw new Error(`meta.json: HTTP ${metaResponse.status}`);
     meta = await metaResponse.json();
 
-    // wasm only: no WebGL fallback, so the numbers match the verified CPU path.
+    // The runtime is served from this origin, so point it at the local copies
+    // instead of letting it guess a CDN path. This has to be an absolute URL:
+    // the runtime loads its glue code with a dynamic import(), and a bare
+    // relative path like "vendor/" is not a valid module specifier.
+    ort.env.wasm.wasmPaths = new URL("vendor/", window.location.href).href;
+    // Single-threaded: multi-threading needs cross-origin isolation headers,
+    // and this model takes a few milliseconds either way.
     ort.env.wasm.numThreads = 1;
     ort.env.wasm.simd = true;
 
