@@ -316,6 +316,19 @@ cd web && python -m http.server 8000   # then open http://localhost:8000
 ONNX Runtime is served from `web/vendor/` rather than a CDN, so the demo has no
 third-party runtime dependency and keeps working if a CDN is blocked or down.
 
+### Deploying it
+
+The site is static — no build step, no server, no environment variables.
+
+On Vercel: **Add New → Project**, import this repository, and set **Root
+Directory** to `web`. Leave the framework preset as *Other* and both the build
+and install commands empty. `web/vercel.json` supplies the cache headers. Every
+push to `main` redeploys.
+
+The same folder works on any static host — Netlify, GitHub Pages, Cloudflare
+Pages — as long as `.wasm` files are served with `Content-Type:
+application/wasm`, which all of them do by default.
+
 Two implementation notes worth recording, because both are silent failures:
 
 - `torch.onnx.export` spills tensors into a sidecar `.onnx.data` file once the
